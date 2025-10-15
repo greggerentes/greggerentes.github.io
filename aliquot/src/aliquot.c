@@ -1,72 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#define MAX_LIMIT 1000000000000000ULL // 10^15
-
-unsigned long long s(unsigned long long n) {
-    if (n <= 1) return 0;
+unsigned long long aliquot_sum(unsigned long long n) {
     unsigned long long sum = 1;
-    for (unsigned long long i = 2; i * i <= n; i++) {
+    if (n == 1) return 0;
+
+    unsigned long long sq = (unsigned long long)sqrt(n);
+    for (unsigned long long i = 2; i <= sq; i++) {
         if (n % i == 0) {
             sum += i;
-            if (i != n / i)
-                sum += n / i;
+            unsigned long long j = n / i;
+            if (j != i) sum += j;
         }
     }
     return sum;
 }
 
-int main(void) {
-    unsigned long long n, next;
-    unsigned long long max_len;
-    char mode;
+int main() {
+    unsigned long long n;
+    unsigned long long max_length;
+    char option;
 
-    printf("Please give the number to start the aliquot sequence from: ");
-    if (scanf("%llu", &n) != 1) {
-        fprintf(stderr, "Input error — my circuits are confused! 🤖\n");
+    if (scanf("%llu %llu %c", &n, &max_length, &option) != 3) {
+        fprintf(stderr, "Invalid input\n");
         return 1;
     }
 
-    printf("Provide the max aliquot length to look for (0 for unlimited): ");
-    if (scanf("%llu", &max_len) != 1) {
-        fprintf(stderr, "Input error — you gave me math, not numbers! 😅\n");
-        return 1;
-    }
-
-    printf("Do you want to print the full sequence ('f') or just the length ('l')? ");
-    if (scanf(" %c", &mode) != 1 || (mode != 'f' && mode != 'l')) {
-        fprintf(stderr, "Invalid choice — I’m a program, not a mind reader! 🧠\n");
+    if (n == 0 || (option != 'f' && option != 'l')) {
+        fprintf(stderr, "Invalid input\n");
         return 1;
     }
 
     unsigned long long count = 0;
-    unsigned long long current = n;
-
-    while (1) {
-        if (mode == 'f') {
-            printf("%llu\n", current);
-        }
-
-        if (current == 0) break;
-
-        next = s(current);
-        count++;
-
-        if (next > MAX_LIMIT) {
-            printf("Number exceeds maximum supported integer (%llu). Stopping. 🚫\n", MAX_LIMIT);
+    while (n != 0 && (max_length == 0 || count < max_length)) {
+        if (n > 1000000000000000ULL) {
+            fprintf(stderr, "Number exceeded 10^15\n");
             return 1;
         }
 
-        if (max_len != 0 && count >= max_len) break;
+        if (option == 'f') {
+            printf("%llu ", n);
+        }
 
-        current = next;
+        n = aliquot_sum(n);
+        count++;
     }
 
-    if (mode == 'l') {
-        printf("Length of aliquot sequence: %llu\n", count);
-        printf("(Don’t worry, math jokes are divisibly funny!) 🤓\n");
+    if (option == 'l') {
+        printf("%llu\n", count);
     } else {
-        printf("Done! That was a long sequence... I need a byte to eat. 🍪\n");
+        printf("\n");
     }
 
     return 0;
