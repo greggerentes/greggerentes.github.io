@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 unsigned long long aliquot_sum(unsigned long long n) {
-    unsigned long long sum = 1;
     if (n == 1) return 0;
 
-    unsigned long long sq = (unsigned long long)sqrt(n);
-    for (unsigned long long i = 2; i <= sq; i++) {
+    unsigned long long sum = 1;
+    for (unsigned long long i = 2; i * i <= n; i++) {
         if (n % i == 0) {
             sum += i;
             unsigned long long j = n / i;
